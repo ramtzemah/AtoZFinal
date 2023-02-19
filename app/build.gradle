@@ -1,0 +1,95 @@
+plugins {
+    id 'com.android.application'
+    id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
+}
+
+android {
+    compileSdk 32
+
+    defaultConfig {
+        applicationId "com.example.atoz2"
+        minSdk 21
+        targetSdk 32
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        def addConstantTo = {target, constantName, constantValue ->
+            target.manifestPlaceholders += [ (constantName):constantValue]
+            target.buildConfigField "String", "${constantName}", "\"${constantValue}\""
+        }
+        debug {
+            debuggable true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            applicationVariants.all { variant ->
+                changeApkName(variant, defaultConfig)
+            }
+
+            buildConfigField('String', 'BaseUrl', '"https://api..."')
+            addConstantTo(owner,"ADMOB_APP_ID", "ca-app-pub-3940256099942544~3347511713")
+            addConstantTo(owner,"ADMOB_BANNER_AD_ID", "ca-app-pub-3940256099942544/6300978111")
+            addConstantTo(owner,"ADMOB_VIDEO_AD_ID", "ca-app-pub-3940256099942544/5224354917")
+        }
+
+        release {
+            minifyEnabled false
+            debuggable false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            applicationVariants.all { variant ->
+                changeApkName(variant, defaultConfig)
+            }
+
+            buildConfigField('String', 'BaseUrl', '"https://api..."')
+            addConstantTo(owner,"ADMOB_APP_ID", "ca-app-pub-3940256099942544~3347511713")
+            addConstantTo(owner,"ADMOB_BANNER_AD_ID", "ca-app-pub-3940256099942544/6300978111")
+            addConstantTo(owner,"ADMOB_VIDEO_AD_ID", "ca-app-pub-3940256099942544/5224354917")
+        }
+
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+}
+
+dependencies {
+    def lottieVersion = "3.4.0"
+    implementation "com.airbnb.android:lottie:$lottieVersion"
+    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'com.google.android.material:material:1.6.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.4'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
+    implementation platform('com.google.firebase:firebase-bom:31.2.0')
+    implementation 'com.google.firebase:firebase-crashlytics'
+    implementation 'com.google.firebase:firebase-analytics'
+    def billing_version = "5.1.0"
+
+    implementation "com.android.billingclient:billing:$billing_version"
+    implementation 'com.google.android.gms:play-services-ads:21.5.0'
+    implementation 'androidx.annotation:annotation:1.1.0'
+
+    implementation 'com.google.firebase:firebase-database'
+    implementation 'com.google.firebase:firebase-auth:21.1.0'
+    implementation 'com.google.firebase:firebase-firestore:24.4.2'
+    implementation 'com.google.firebase:firebase-storage:20.1.0'
+    implementation 'com.google.gms:google-services:4.3.15'
+    implementation 'com.google.code.gson:gson:2.10'
+
+}
+def changeApkName(variant, defaultConfig) {
+    variant.outputs.each { output ->
+        def buildType = variant.getBuildType().getName()
+        //def productFlavor = variant.productFlavors[0].name
+        variant.outputs.all {
+            outputFileName = "SymonSays_${defaultConfig.versionName}_" + buildType + ".apk"
+        }
+    }
+}
